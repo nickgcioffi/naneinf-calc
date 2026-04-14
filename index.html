@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple balatro website to help with Baron-based high card runs, to help visualize how far one is from naneinf."/>
+    <meta name="author" content="NickBoff"/>
+    <title>Balatro Naneinf Calculator</title>
+    <link href="css/styles.css" rel="stylesheet"/>
+</head>
+<body>
+    <header id="top">
+        <h1>Balatro Naneinf Calculator</h1>
+    </header>
+    <main>
+        <section class="intro">
+            <div>
+                <h2>How close is the run?</h2>
+                <p class="note">
+                    Estimate Baron and Mime scaling without crashing into JavaScript infinity. The math uses base-10 logarithms, so the app can compare huge scores against the naneinf neighborhood.
+                </p>
+                <p class="note">
+                    This is a planning calculator, not a full Balatro engine. It focuses on hand size, kings in hand, Baron copies, Mime retriggers, steel cards, Blueprint, Brainstorm, DNA, Burglar, and The Serpent.
+                </p>
+            </div>
+            <div class="joker-strip" aria-label="Featured jokers">
+                <img src="assets/jokers/Baron.png" alt="Baron Joker">
+                <img src="assets/jokers/Mime.png" alt="Mime Joker">
+                <img src="assets/jokers/Blueprint.png" alt="Blueprint Joker">
+                <img src="assets/jokers/Brainstorm.png" alt="Brainstorm Joker">
+                <img src="assets/jokers/DNA.png" alt="DNA Joker">
+                <img src="assets/jokers/Burglar.png" alt="Burglar Joker">
+            </div>
+        </section>
+
+        <div class="app-grid" id="calculator">
+            <section class="calculator">
+                <h2>Run Setup</h2>
+
+                <div class="control-group">
+                    <div class="two-col">
+                        <div>
+                            <label for="chips">Starting chips</label>
+                            <input id="chips" type="number" min="1" value="120">
+                        </div>
+                        <div>
+                            <label for="mult">Starting mult</label>
+                            <input id="mult" type="number" min="1" value="40">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="two-col">
+                        <div>
+                            <label for="kings">Kings held in hand</label>
+                            <input id="kings" type="number" min="0" value="12">
+                        </div>
+                        <div>
+                            <label for="steelKings">Steel kings held</label>
+                            <input id="steelKings" type="number" min="0" value="8">
+                        </div>
+                    </div>
+                    <label class="check-row">
+                        <input id="redSeals" type="checkbox">
+                        Count every held king as red sealed
+                    </label>
+                    <label class="check-row">
+                        <input id="plasma" type="checkbox">
+                        Plasma Deck balances chips and mult
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <div class="two-col">
+                        <div>
+                            <label for="hands">Hands this blind</label>
+                            <input id="hands" type="number" min="1" value="4">
+                        </div>
+                        <div>
+                            <label for="startKings">Starting king count</label>
+                            <input id="startKings" type="number" min="0" value="12">
+                        </div>
+                    </div>
+                    <label class="check-row">
+                        <input id="antimatter" type="checkbox">
+                        Antimatter gives one extra joker slot
+                    </label>
+                    <label class="check-row">
+                        <input id="ectoplasm" type="checkbox">
+                        Ectoplasm lowers hand size by 1 and adds one joker slot
+                    </label>
+                    <label class="check-row">
+                        <input id="handVouchers" type="checkbox">
+                        Paint Brush and Palette are active
+                    </label>
+                    <label class="check-row">
+                        <input id="serpent" type="checkbox" checked>
+                        The Serpent draw pattern is active
+                    </label>
+                </div>
+
+                <div class="control-group">
+                    <h3>Joker Order</h3>
+                    <p class="note">
+                        Blueprint copies the joker to its right. Brainstorm copies the leftmost joker. Move cards to test the order.
+                        If Burglar is present, the app assumes every copy joker copied Burglar at blind start before you rearranged for scoring.
+                    </p>
+                    <div class="joker-builder">
+                        <div>
+                            <label for="jokerSelect">Add joker</label>
+                            <select id="jokerSelect">
+                                <option value="baron">Baron</option>
+                                <option value="mime">Mime</option>
+                                <option value="blueprint">Blueprint</option>
+                                <option value="brainstorm">Brainstorm</option>
+                                <option value="dna">DNA</option>
+                                <option value="burglar">Burglar</option>
+                            </select>
+                        </div>
+                        <button id="addJokerBtn" type="button" class="small-button">Add</button>
+                    </div>
+                    <div id="rosterList" class="roster-list" aria-live="polite"></div>
+                    <p class="note" id="slotOut"></p>
+                </div>
+
+                <div class="button-row">
+                    <button id="calculateBtn" type="button">Calculate</button>
+                    <button id="copyPlanBtn" class="secondary" type="button">Use Growth Estimate</button>
+                    <button id="resetBtn" class="secondary" type="button">Reset</button>
+                </div>
+            </section>
+
+            <section class="results" aria-live="polite">
+                <h2>Score Readout</h2>
+                <div class="score-card">
+                    <div class="score-label">Estimated score</div>
+                    <div class="big-number" id="scoreOut">0</div>
+                </div>
+
+                <div class="meter" aria-label="Progress toward naneinf">
+                    <div class="meter-fill" id="meterFill"></div>
+                </div>
+
+                <div class="distance">
+                    <div class="metric">
+                        <span class="score-label">Log10 score</span>
+                        <strong id="logOut">0</strong>
+                    </div>
+                    <div class="metric">
+                        <span class="score-label">Naneinf gap</span>
+                        <strong id="gapOut">0</strong>
+                    </div>
+                    <div class="metric">
+                        <span class="score-label">Total x1.5 triggers</span>
+                        <strong id="triggerOut">0</strong>
+                    </div>
+                </div>
+
+                <p class="note" id="summaryOut"></p>
+                <p class="warning" id="warningOut"></p>
+            </section>
+        </div>
+
+        <section class="explain">
+            <h2>What The App Counts</h2>
+            <p class="note">
+                Baron-style scoring is modeled as repeated x1.5 multipliers from kings held in hand. Steel kings add more x1.5 triggers, and Mime-style retriggers repeat held-card effects. DNA and Burglar estimate how many extra kings you could build during a Serpent blind.
+            </p>
+            <div class="formula" id="formulaOut"></div>
+        </section>
+
+        <footer>
+            <p>Version 0.1.0 | By NickBoff</p>
+        </footer>
+    </main>
+    <script src="js/scripts.js"></script>
+</body>
+</html>
