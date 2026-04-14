@@ -30,7 +30,6 @@ It is aimed to be:
 
 ## Future Plans
 - Organizing the flow of creating a build
-- Eliminating starting chips and mult, and just using a "high card" level instead.
 - Preset builds
 - Perkeo integration
 
