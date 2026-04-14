@@ -29,9 +29,9 @@ It is aimed to be:
 - JavaScript
 
 ## Future Plans
-- Organizing the flow of creating a build
 - Preset builds
-- Perkeo integration
+- Perkeo and the "tarot particle accelerator" integrated.
+- Enhancing the joker organization tool (for 1.0)
 
 ## Notes
 This is a personal project built to understand Balatro scoring, and explore simple web development.
