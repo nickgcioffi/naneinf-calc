@@ -38,12 +38,10 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         let jokerRoster = [...defaultRoster];
 
         const defaults = {
-            chips: 120,
-            mult: 40,
+            level:10,
             kings: 12,
             steelKings: 8,
             hands: 4,
-            startKings: 12,
             redSeals: false,
             plasma: false,
             antimatter: false,
@@ -65,12 +63,10 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
 
         function getState() {
             return {
-                chips: Math.max(1, getNumber("chips")),
-                mult: Math.max(1, getNumber("mult")),
+                level: Math.max(1, Math.floor(getNumber("level"))),
                 kings: Math.floor(getNumber("kings")),
                 steelKings: Math.floor(getNumber("steelKings")),
                 hands: Math.max(1, Math.floor(getNumber("hands"))),
-                startKings: Math.floor(getNumber("startKings")),
                 redSeals: getInput("redSeals").checked,
                 plasma: getInput("plasma").checked,
                 antimatter: getInput("antimatter").checked,
@@ -79,6 +75,13 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
                 serpent: getInput("serpent").checked
             };
         }
+        
+        function getHighCardStats(level) {
+            return {
+                chips: 5 + (level - 1) * 10,
+                mult: 1 + (level - 1) * 2
+            }
+        };
 
         function getEffectiveHandSize(state) {
             return Math.max(1, 8 + (state.handVouchers ? 2 : 0) - (state.ectoplasm ? 1 : 0));
@@ -227,6 +230,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
 
         function calculate() {
             const state = getState();
+            const highCard = getHighCardStats(state.level);
             const counts = countEffectiveJokers(state);
             const burglarStartEffects = countBlindStartBurglarEffects(state);
             const handSize = getEffectiveHandSize(state);
@@ -244,8 +248,8 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
             const steelTriggers = steelKings * heldCardTriggers;
             const totalTriggers = baronTriggers + steelTriggers;
 
-            const logChips = Math.log10(state.chips);
-            const logFinalMult = Math.log10(state.mult) + totalTriggers * LOG10_15;
+            const logChips = Math.log10(highCard.chips);
+            const logFinalMult = Math.log10(highCard.mult) + totalTriggers * LOG10_15;
             const logScore = state.plasma
                 ? 2 * (log10Add(logChips, logFinalMult) - Math.log10(2))
                 : logChips + logFinalMult;
@@ -253,7 +257,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
             const progress = Math.max(0, Math.min(100, (logScore / NANEINF_LOG10) * 100));
 
             const dnaGrowth = counts.dna * availableHands;
-            const estimatedKings = Math.min(heldCardCapacity, state.startKings + dnaGrowth + serpentStackedCards);
+            const estimatedKings = Math.min(heldCardCapacity, state.kings + dnaGrowth + serpentStackedCards);
 
             document.getElementById("scoreOut").textContent = formatScientific(logScore);
             document.getElementById("logOut").textContent = logScore.toFixed(2);
@@ -273,8 +277,8 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
 
             document.getElementById("formulaOut").textContent =
                 state.plasma
-                    ? `final mult = ${state.mult} * 1.5^${totalTriggers}; log10(score) = 2 * log10((${state.chips} + final mult) / 2)`
-                    : `log10(score) = log10(${state.chips}) + log10(${state.mult}) + ` +
+                    ? `final mult = ${highCard.mult} * 1.5^${totalTriggers}; log10(score) = 2 * log10((${highCard.chips} + final mult) / 2)`
+                    : `log10(score) = log10(${highCard.chips}) + log10(${highCard.mult}) + ` +
                         `(${activeKings} kings * ${baronEffects} Baron effects * ${heldCardTriggers} held-card triggers + ` +
                         `${steelKings} steel kings * ${heldCardTriggers} held-card triggers) * log10(1.5)`;
 
