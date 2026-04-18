@@ -29,9 +29,9 @@ It is aimed to be:
 - JavaScript
 
 ## Future Plans
-- A check to prevent typing in more cards than you could have with your build.
 - Perkeo with the "tarot particle accelerator" and cryptid engine integrated.
 - Preset builds
+- Adding more website navigation options if needed.
 - Enhancing the joker organization tool (for 1.0)
 
 ## Notes

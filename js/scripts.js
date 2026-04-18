@@ -1,6 +1,8 @@
+// Score thresholds and repeated math constants used by the calculator.
 const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         const LOG10_15 = Math.log10(1.5);
 
+        // Display data for each joker option in the roster UI.
         const jokerInfo = {
             baron: {
                 name: "Baron",
@@ -34,9 +36,11 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
             }
         };
 
+        // Starting joker order, plus the live roster the user can edit.
         const defaultRoster = ["brainstorm", "baron", "blueprint", "mime", "dna"];
         let jokerRoster = [...defaultRoster];
 
+        // Default input values used on first load and when the form is reset.
         const defaults = {
             level:10,
             kings: 12,
@@ -50,6 +54,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
             serpent: true
         };
 
+        // Input ids are derived from defaults so reset and setup stay in sync.
         const ids = Object.keys(defaults);
 
         function getInput(id) {
@@ -57,11 +62,13 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         function getNumber(id) {
+            // Reads a number input and falls back to 0 for invalid values.
             const value = Number(getInput(id).value);
             return Number.isFinite(value) && value >= 0 ? value : 0;
         }
 
         function getState() {
+            // Current calculator state, normalized from the form controls.
             return {
                 level: Math.max(1, Math.floor(getNumber("level"))),
                 kings: Math.floor(getNumber("kings")),
@@ -76,6 +83,23 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
             };
         }
         
+         //Handle invalid inputs
+        function handleError(kings, steelKings, heldCardCapacity) {
+            const kingsInput = getInput("kings");
+            const kingsLabel = document.querySelector('label[for="kings"]');
+            const steelKingsInput = getInput("steelKings");
+            const steelKingsLabel = document.querySelector('label[for="steelKings"]');
+
+            const isTooManyKings = kings > heldCardCapacity;
+            const isTooManySteelKings = steelKings > kings;
+
+            kingsInput.classList.toggle("input-error", isTooManyKings);
+            kingsLabel.classList.toggle("label-error", isTooManyKings);
+            steelKingsInput.classList.toggle("input-error", isTooManySteelKings);
+            steelKingsLabel.classList.toggle("label-error", isTooManySteelKings);
+        }
+
+
         function getHighCardStats(level) {
             return {
                 chips: 5 + (level - 1) * 10,
@@ -96,6 +120,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         function resolveJoker(index, roster, seen = new Set()) {
+            // Follow Blueprint/Brainstorm copy chains until a real joker is found.
             const joker = roster[index];
 
             if (!joker || seen.has(index)) {
@@ -120,6 +145,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         function countEffectiveJokers(state) {
+            // Count real joker effects after Blueprint and Brainstorm copies resolve.
             const roster = getActiveRoster(state);
             const counts = {
                 baron: 0,
@@ -140,6 +166,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         function countBlindStartBurglarEffects(state) {
+            // Burglar hand bonuses count copy jokers only when a real Burglar exists.
             const roster = getActiveRoster(state);
             const realBurglars = roster.filter((joker) => joker === "burglar").length;
             const copyJokers = roster.filter((joker) => joker === "blueprint" || joker === "brainstorm").length;
@@ -148,6 +175,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         function getCopyDescription(index) {
+            // Text shown under each roster card to explain what it is copying.
             const joker = jokerRoster[index];
             const state = getState();
             const roster = getActiveRoster(state);
@@ -170,6 +198,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         function renderRoster() {
+            // Build the editable joker roster and update slot/hand-size feedback.
             const rosterList = document.getElementById("rosterList");
             const state = getState();
             const slots = getJokerSlots(state);
@@ -177,6 +206,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
             rosterList.innerHTML = "";
 
             jokerRoster.forEach((joker, index) => {
+                // Create one roster card with move/remove controls.
                 const info = jokerInfo[joker];
                 const card = document.createElement("div");
                 card.className = index >= slots ? "roster-card inactive" : "roster-card";
@@ -217,18 +247,21 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
                 return Math.round(Math.pow(10, logScore)).toLocaleString();
             }
 
+            // Split the log score into mantissa/exponent notation.
             const exponent = Math.floor(logScore);
             const mantissa = Math.pow(10, logScore - exponent);
             return `${mantissa.toFixed(3)}e${exponent}`;
         }
 
         function log10Add(leftLog, rightLog) {
+            // Adds two log10 values without converting huge scores back to normal numbers.
             const larger = Math.max(leftLog, rightLog);
             const smaller = Math.min(leftLog, rightLog);
             return larger + Math.log10(1 + Math.pow(10, smaller - larger));
         }
 
         function calculate() {
+            // Gather all current inputs and derived joker/hand limits for scoring.
             const state = getState();
             const highCard = getHighCardStats(state.level);
             const counts = countEffectiveJokers(state);
@@ -237,6 +270,8 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
             const availableHands = state.hands + (burglarStartEffects * 3);
             const serpentStackedCards = state.serpent ? availableHands * 2 : 0;
             const heldCardCapacity = handSize + serpentStackedCards;
+            handleError(state.kings, state.steelKings, heldCardCapacity);
+
             const activeKings = Math.min(state.kings, heldCardCapacity);
             const steelKings = Math.min(state.steelKings, activeKings);
             const baronEffects = counts.baron;
@@ -244,10 +279,12 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
             const redSealRetriggers = state.redSeals ? 1 : 0;
             const heldCardTriggers = 1 + mimeEffects + redSealRetriggers;
 
+            // Convert held kings, Baron, Mime, steel, and red seals into total retriggers.
             const baronTriggers = activeKings * baronEffects * heldCardTriggers;
             const steelTriggers = steelKings * heldCardTriggers;
             const totalTriggers = baronTriggers + steelTriggers;
 
+            // Calculate the score in log10 space so very large numbers stay manageable.
             const logChips = Math.log10(highCard.chips);
             const logFinalMult = Math.log10(highCard.mult) + totalTriggers * LOG10_15;
             const logScore = state.plasma
@@ -256,6 +293,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
             const gap = Math.max(0, NANEINF_LOG10 - logScore);
             const progress = Math.max(0, Math.min(100, (logScore / NANEINF_LOG10) * 100));
 
+            // Estimate how many kings DNA and Serpent could leave you holding later.
             const dnaGrowth = counts.dna * availableHands;
             const estimatedKings = Math.min(heldCardCapacity, state.kings + dnaGrowth + serpentStackedCards);
 
@@ -286,6 +324,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         function useGrowthEstimate() {
+            // Reuse the growth math to fill the current king count input.
             const state = getState();
             const counts = countEffectiveJokers(state);
             const burglarStartEffects = countBlindStartBurglarEffects(state);
@@ -303,6 +342,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
 
         function resetValues() {
             ids.forEach((id) => {
+                // Reset each control based on whether it is a checkbox or text/number input.
                 const input = getInput(id);
                 if (input.type === "checkbox") {
                     input.checked = defaults[id];
@@ -315,6 +355,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         function addJoker() {
+            // Check the current slot limit before adding the selected joker.
             const state = getState();
             if (jokerRoster.length >= getJokerSlots(state)) {
                 return;
@@ -325,6 +366,7 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         function moveJoker(index, direction) {
+            // Calculate the target roster position before swapping jokers.
             const nextIndex = index + direction;
             if (nextIndex < 0 || nextIndex >= jokerRoster.length) {
                 return;
@@ -340,11 +382,13 @@ const NANEINF_LOG10 = Math.log10(Number.MAX_VALUE);
         }
 
         document.getElementById("rosterList").addEventListener("click", (event) => {
+            // One click handler manages all roster buttons by reading data attributes.
             const button = event.target.closest("button");
             if (!button) {
                 return;
             }
 
+            // Button index tells move/remove functions which roster item was clicked.
             const index = Number(button.dataset.index);
 
             if (button.dataset.action === "left") {

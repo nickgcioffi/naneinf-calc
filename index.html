@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A simple balatro website to help with Baron-based high card runs, to help visualize how far one is from naneinf."/>
-    <meta name="author" content="NickBoff"/>
+    <meta name="description" content="A simple balatro website to help with infinite scoring runs, to help visualize how far one is from naneinf."/>
+    <meta name="author" content="nickgcioffi"/>
     <title>Balatro Naneinf Calculator</title>
     
     <!--Style Sheet-->
@@ -17,16 +17,26 @@
 <body>
     <header id="top">
         <h1>Balatro Naneinf Calculator</h1>
+        <nav>
+            <a href="#intro"><p><strong>Calculator Explanation</strong></p></a>
+            <a href="#calculator"><p><strong>Run Layout</strong></p></a>
+            <a href="#joker"><p><strong>Joker Layout</strong></p></a>
+            <a href="#naneinf"><p><strong>What is naneinf?</strong></p></a>
+        </nav>
     </header>
     <main>
         <section class="intro">
-            <div>
-                <h2>How close is the run?</h2>
+            <div id="intro">
+                <h2>What is this Balatro Naneinf Calculator?</h2>
                 <p class="note">
-                    Estimate Baron and Mime scaling without crashing into JavaScript infinity. The math uses base-10 logarithms, so the app can compare huge scores against the naneinf neighborhood.
+                    This calculator estimates Balatro's score scaling for Baron and Mime builds without hitting JavaScript limits
+                    similar to Balatro's naneinf (~1.8e308).
                 </p>
                 <p class="note">
-                    This is a planning calculator, not a full Balatro engine. It focuses on hand size, kings in hand, Baron copies, Mime retriggers, steel cards, Blueprint, Brainstorm, DNA, Burglar, and The Serpent.
+                    It is a planning calculator, not a full Balatro engine. It focuses on key scaling factors such as total hand size, kings in hand, red seals, steel, Blueprint/Brainstorm and boss blinds effects (with the Serpent).
+                </p>
+                <p class="note">
+                    Other builds and jokers, like Perkeo with planet cards or cryptid cards, will be added in future updates.
                 </p>
             </div>
             <div class="joker-strip" aria-label="Featured jokers">
@@ -96,7 +106,7 @@
                     </label>
                 </div>
 
-                <div class="control-group">
+                <div class="control-group" id="joker">
                     <h3>Joker Order</h3>
                     <p class="note">
                         Blueprint copies the joker to its right. Brainstorm copies the leftmost joker. Move cards to test the order.
@@ -166,8 +176,17 @@
             <div class="formula" id="formulaOut"></div>
         </section>
 
+        <section class="naneinf" id="naneinf">
+            <div>
+                <h2>What is Naneinf?</h2>
+                <p>Naneinf is a term in Balatro, for scores that exceed what the game can display. 
+                   (around 1.8e308). At this point, the UI breaks and shows values like <i>NaN</i> (not a number) and <i>inf</i> (infinity), 
+                   resulting in what you see in the UI: <i>naneinf</i>. Jokers like Baron, Mime, and Perkeo can help to achieve these explosive scores.</p>
+            </div>
+        </section>
+
         <footer>
-            <p>Version 0.2.1 | By NickBoff</p>
+            <p>Version 0.3.0 | By NickBoff</p>
         </footer>
     </main>
 </body>
