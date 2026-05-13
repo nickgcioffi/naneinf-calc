@@ -1,6 +1,6 @@
 # Change Log
 
-##v0.3.1
+## v0.3.1
 - Preparing the foundation for future development
 - Added a link to the Github repo
 - Added a full collection of each joker
