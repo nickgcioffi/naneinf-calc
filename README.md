@@ -34,6 +34,7 @@ It is aimed to be:
 - Add Perkeo Cryptid and High Card Planet Accelerator builds (for 0.5.0)
 - Add Flush Five naneinf strategies (for 0.6.0)
 - Reworking the joker organization tool and general UI/UX (for 1.0)
+- Spanish / Portugese Localization (for 1.0)
 - Save build/state (for 1.1)
 - Add "you can naneinf at round (x) (for 1.2)
 - 1.x and beyond will be adding niche strategies to the lineup
