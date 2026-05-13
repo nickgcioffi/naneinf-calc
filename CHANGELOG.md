@@ -1,5 +1,11 @@
 # Change Log
 
+##v0.3.1
+- Preparing the foundation for future development
+- Added a link to the Github repo
+- Added a full collection of each joker
+- Cleaned up the repo
+
 ## v0.3.0
 - Added validation with red highlight for invalid hand sizes
 - Improved wording for clarity and search visibility
