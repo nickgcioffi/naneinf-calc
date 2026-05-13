@@ -1,5 +1,8 @@
 # Change Log
 
+## v0.3.2
+- Added deeper website management files
+
 ## v0.3.1
 - Preparing the foundation for future development
 - Added a link to the Github repo

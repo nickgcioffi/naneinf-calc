@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /assets/
+Disallow: /joker\ roster/
+
+
+Allow: /index.html
+Allow: /js/
+Allow: /css/
+
+
+Sitemap: https://nickgcioffi.github.io/naneinf-calc/sitemap.xml
