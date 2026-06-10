@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.4.0
+- Refactored code to enable smoother development.
+- Added a dropdown to set builds (the jokers aren't here yet :P)
+- Fixed a bug where the high card score would not calculate properly. High card mult scaled at plus 2 rather than plus 1, so that was adjusted.
+
 ## v0.3.2
 - Added deeper website management files
 

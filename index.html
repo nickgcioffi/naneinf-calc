@@ -8,11 +8,12 @@
     <title>Balatro Naneinf Calculator</title>
     
     <!--Style Sheet-->
-    <link href="css/styles.css" rel="stylesheet">
-
-    <!--Version Bump-->
-    <link rel="stylesheet" href="css/style.css?v=0.3.2">
-    <script src="js/scripts.js?v=0.3.2" defer></script>
+    <link rel="stylesheet" href="css/styles.css?v=0.4.0">
+    <!--Newer Scripts-->
+    <script src="js/jokers.js" defer></script>
+    <script src="js/scoring.js" defer></script>
+    <script src="js/webpage.js" defer></script>
+    
 </head>
 <body>
     <header id="top">
@@ -52,6 +53,15 @@
         <div class="app-grid" id="calculator">
             <section class="calculator">
                 <h2>Run Setup</h2>
+                <div class="preset">
+                    <label>Choose your preset! (Doesn't entirely work yet, needs jokers.)</label>
+                    <select id="buildSelect">
+                        <option value="highCard">High Card</option>
+                        <option value="cryptid">Cryptid</option>
+                        <option value="planet">Planet</option>
+                        <option value="freeform">Freeform</option>
+                    </select>
+                </div>
 
                 <div class="control-group">
                     <div class="two-col">
@@ -186,7 +196,7 @@
         </section>
 
         <footer>
-            <p>Version 0.3.2 | By Nick | <a href="https://github.com/nickgcioffi/naneinf-calc/tree/main">Github</a></p>
+            <p>Version 0.4.0 | By Nick | <a href="https://github.com/nickgcioffi/naneinf-calc/tree/main">Github</a></p>
         </footer>
     </main>
 </body>
